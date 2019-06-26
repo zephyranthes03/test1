@@ -1,0 +1,37 @@
+version: "3"
+services:
+    mongo:
+    build: ./mongo
+    container_name: mongo
+    ports:
+      - "${WIND_MONGO_CONTROL_PORT}:${WIND_MONGO_CONTROL_PORT}"
+    environment:
+      - "WIND_MONGO_DATA_AUTH=${WIND_MONGO_DATA_AUTH}"
+      - "WIND_MONGO_DATA_PORT=${WIND_MONGO_DATA_PORT}"
+      - "WIND_MONGO_VERBOSITY=${WIND_MONGO_VERBOSITY}"
+    networks:
+      - back-tier
+    volumes:
+      - mongodb:/data/db
+#      - ${MONGO_DATA_SSL_CA}:/etc/ssl/rootCA.pem
+#      - ${MONGO_DATA_SSL_CERT}:/etc/ssl/mongodb.crt
+#      - ${MONGO_DATA_SSL_KEY}:/etc/ssl/mongodb.pem
+
+    graphQL: 
+    build: ./graphql-service
+    container_name: graphQL-service
+    ports:
+      - "3001:80"
+    networks:
+      - back-tier
+    links:
+      - mongo
+    valumns:
+      - ./graphql-service/app:/graphql-service
+
+
+networks:
+  back-tier:
+  front-tier:
+    exteral: true
+  
